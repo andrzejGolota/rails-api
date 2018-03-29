@@ -16,17 +16,23 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 
 group :test do
+  #gem 'rails-controller-testing'
+  gem 'shoulda'
+  gem 'email_spec'
+  gem 'factory_bot'
+  gem 'faker'
   gem 'database_cleaner'
-  gem 'launchy'
+  gem 'shoulda-matchers', require: false
+  gem 'test-unit'
 end
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'launchy'
   gem 'capybara', '~> 2.13'
   gem 'selenium-webdriver'
   gem 'rspec-rails'
-  gem 'factory_girl_rails'
-  gem 'faker'
+  gem 'rspec'
 end
 
 group :development do
@@ -46,15 +52,18 @@ gem 'omniauth-paypal-openid'
 gem 'omniauth-vkontakte'
 gem 'omniauth'
 
-gem 'devise'
+gem 'jwt'
+gem 'rack-cors'
+gem 'carrierwave'
+gem 'simple_token_authentication', '~> 1.0'
+gem 'bcrypt', platforms: :ruby
+gem 'delayed_job_active_record'
 gem 'paypal-sdk-rest' #will try to implement payments
 gem 'cancancan', '~> 2.0'
 gem 'pg'
 gem 'swagger-docs'
-gem 'delayed_job_active_record' #sending emails
 gem 'haml'
 gem 'aasm' #state machine would be helpful
 gem 'roo'
-gem 'axlsx'
 gem 'prawn'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

@@ -5,3 +5,11 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+ROLES = [
+  "Invoice-App-FreeUser",
+  "Invoice-App-PremiumUser",
+  "Invoice-App-Mod",
+  "Invoice-App-HeadAdmin"
+]
+
+ROLES.each{ |role| Role.where(name: role).first_or_create! }
