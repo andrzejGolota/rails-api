@@ -8,6 +8,7 @@ class CreateInvoices < ActiveRecord::Migration[5.1]
       t.references :company, index: true, foreign_key: true
       t.string :state, null: false
       t.string :comment, length: 4000
+      t.datetime :settled_at
       t.timestamps
     end
   end

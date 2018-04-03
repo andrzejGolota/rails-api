@@ -1,10 +1,10 @@
 FactoryBot.define do
   factory :invoice do
-    basic_user
-    association :client, factory: :basic_user
+    association :user, factory: :basic_user
+    association :client, factory: :company
     invoice_number { Faker::Number.number(10) }
     subject { Faker::Lorem.word }
-    company
+    association :company, factory: :company
     comment { Faker::Lorem.sentence }
 
     trait :draft do
@@ -23,10 +23,10 @@ FactoryBot.define do
       state 'settled'
     end
 
-    trait :refused do
-
+    factory :invoice_draft do
+      draft
     end
-    
+
     factory :created_invoice do
       created
     end
@@ -42,15 +42,11 @@ FactoryBot.define do
     end
 
     factory :pending_invoice do
-
-    end
-
-    factory :accepted_invoice do
-
+      pending
     end
 
     factory :settled_invoice do
-
+      settled
     end
   end
 end

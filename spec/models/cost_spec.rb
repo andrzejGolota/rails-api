@@ -26,12 +26,14 @@ describe Cost do
 
   describe "methods" do
 
-    context "total price" do
-
+    it "calculates total price" do
+      cost = create(:cost)
+      expect(cost.total_price).to eq(cost.quantity*cost.unit_price)
     end
 
-    context "automatical tax calculation" do
-
+    it "automatically calculates with tax" do
+      cost = create(:cost)
+      expect(cost.total_price_taxed).to eq(cost.quantity*(cost.unit_price*cost.tax+cost.unit_price))
     end
 
   end
@@ -40,6 +42,5 @@ describe Cost do
     it { is_expected.to belong_to :invoice }
     it { is_expected.to belong_to :user }
   end
-
 
 end

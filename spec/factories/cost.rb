@@ -6,7 +6,7 @@ FactoryBot.define do
     unit_price { Faker::Commerce.price }
     tax { Faker::Number.between(10, 30) }
     cost_type 'Product'
-    basic_user
-    created_invoice
+    association :user, factory: :basic_user
+    association :invoice, factory: :created_invoice
   end
 end

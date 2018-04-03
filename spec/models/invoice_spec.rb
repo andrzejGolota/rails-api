@@ -9,10 +9,16 @@ describe Invoice do
     it { is_expected.to validate_presence_of :subject }
     it { is_expected.to validate_presence_of :company_id }
     it { is_expected.to validate_presence_of :state }
-  end
 
-  context "state machine validations" do
-
+    context "settled_at is required for final state" do
+      before do
+        @invoice = create(:settled_invoice)
+      end
+      subject { @invoice }
+      it {
+        is_expected.to validate_presence_of :settled_at
+      }
+    end
   end
 
   describe "db columns" do
@@ -28,26 +34,34 @@ describe Invoice do
 
   describe "methods" do
 
-    context "total invoice price" do
-
+    it "returns total invoice price" do
+      invoice = create(:invoice_with_costs)
+      invoice.costs.each{ |cost| cost_sum = cost_sum + cost.quantity*cost.unit_price }
+      expect(invoice.total_value).to eq(cost_sum)
     end
 
-    context "state humanizer" do
-
+    it "returns total invoice price with taxes" do
+      invoice = create(:invoice_with_costs)
+      invoice.costs.each{ |cost| cost_sum = cost_sum + cost.quantity*(cost.unit_price*cost.tax+cost.unit_price) }
+      expect(invoice.total_taxed_value).to eq(cost_sum)
     end
 
   end
 
-  describe "state machine" do
+  describe "aasm" do
 
-    context "should have correct initial state" do
-
+    it "should have correct initial state" do
+      invoice = create(:created_invoice)
+      expect(invoice).to transition_from(:created).to(:pending).on_event(:fill)
+      expect(invoice).to have_state :created
+      expect(invoice).to transition_from(:created).to(:draft).on_event(:fill_draft)
+      expect(invoice).to_not allow_transition_to :settled
     end
 
-    context "has correct transitions" do
-    end
-
-    context "can be accepted by client" do
+    it "sets the date after settled" do
+      invoice = create(:pending_invoice)
+      invocie.settle!
+      expect(invoice.settled_at).not_to be_nil
     end
 
   end
