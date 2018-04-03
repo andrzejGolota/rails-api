@@ -11,7 +11,7 @@ describe ContactAddress do
     it { is_expected.to validate_presence_of :default }
     context "first address must be default" do
       before do
-        @contact_address = Factory.new(:contact_address)
+        @contact_address = create(:contact_address, default: false)
       end
       subject{ @contact_address }
       it {
@@ -32,8 +32,12 @@ describe ContactAddress do
   end
 
   describe "methods" do
-    context "automatically change default address if new is added" do
-
+    it "automatically changes default address if new is added" do
+      3.times do
+        contact = create(:contact)
+        create(:contact_address, default: true, contact: contact)
+      end
+      expect(contact.contact_addresses.where(default: true).length).to eq(1)
     end
   end
 

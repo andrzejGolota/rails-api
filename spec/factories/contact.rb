@@ -1,9 +1,16 @@
 FactoryBot.define do
   factory :contact do
-    basic_user
-    contact_user_id nil #association :contact_user, factory: :basic_user
+    association :user, factory: :premium_user
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
-    company nil
+
+    factory :contact_to_user do
+      association :contact_user, factory: :premium_user
+      accepted true
+    end
+
+    factory :contact_with_company do
+      association :company, factory: :company
+    end
   end
 end

@@ -13,12 +13,17 @@ describe Contact do
       end
       subject { @contact }
       it {
-        should validate_presence_of :accepted #to be in correct state, we will test it in aasm section
+        should validate_presence_of :accepted
       }
     end
-  end
 
-  context "state machine validations" do
+    context "only premium users can create contacts" do
+      before do
+        @contact = Factory.new(:contact, user: create(:basic_user))
+      end
+      subject { @contact }
+      it { should_not be_valid }
+    end
 
   end
 
@@ -34,12 +39,37 @@ describe Contact do
 
   describe "methods" do
 
-    context "shows contact for user only if it is accepted" do
-
+    it "assigns automatically first name and last name" do
+      user = create(:basic_user)
+      creator = create(:premium_user)
+      contact = create(:contact, user: creator, contact_user: user)
+      contact.accepted = true
+      contact.save
+      expect(contact.first_name).to eq(user.first_name)
+      expect(contact.last_name).to eq(user.last_name)
     end
 
-    context "only user asked for being added is able to accept / refuse" do
+    it "shows contact for user only if it is accepted" do
+      user = create(:basic_user)
+      creator = create(:premium_user)
+      contact = create(:contact, user: creator, contact_user: user)
+      expect(creator.contacts.length).to eq(0)
+      contact.accepted = true
+      contact.save
+      expect(creator.contacts.length).to eq(1)
+    end
 
+    it "has default contact address method" do
+      contact = create(:contact)
+      contact_address = create(:contact_address, contact: contact)
+      expect(contact.default_address.id).to eq(contact_address.id)
+    end
+
+    it "shows unaccepted contacts" do
+      user = create(:basic_user)
+      creator = create(:premium_user)
+      create(:contact, user: creator, contact_user: user)
+      expect(creator.awaiting_contacts.length).to eq(1)
     end
 
   end

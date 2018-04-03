@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :attachment do
-    basic_user
-    invoice
+    association :user, factory: :basic_user
+    association :invoice, factory: :created_invoice
 
     factory :correct_attachment do
       file { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'support', 'avatar.png'), 'image/png') }
