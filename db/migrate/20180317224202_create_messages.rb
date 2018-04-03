@@ -5,6 +5,7 @@ class CreateMessages < ActiveRecord::Migration[5.1]
       t.references :recipent, index: true, foreign_key: { to_table: :user }
       t.string :content, length: 4000
       t.string :state, null: false
+      t.string :attachment
       t.timestamps
     end
   end

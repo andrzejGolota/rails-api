@@ -8,5 +8,6 @@ FactoryBot.define do
     city { Faker::Address.city }
     region { Faker::Address.state }
     country_code { Faker::Address.country_code_long }
+    association :user, factory: :basic_user
   end
 end

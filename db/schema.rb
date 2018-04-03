@@ -31,10 +31,12 @@ ActiveRecord::Schema.define(version: 20180329184813) do
     t.string "city", null: false
     t.string "region"
     t.string "country_code", null: false
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["company_number"], name: "index_companies_on_company_number"
     t.index ["country_code"], name: "index_companies_on_country_code"
+    t.index ["user_id"], name: "index_companies_on_user_id"
     t.index ["vat_number"], name: "index_companies_on_vat_number"
   end
 
@@ -149,6 +151,7 @@ ActiveRecord::Schema.define(version: 20180329184813) do
     t.integer "user_id"
     t.integer "order_id"
     t.string "state", null: false
+    t.decimal "amount", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_payments_on_order_id"
@@ -172,8 +175,8 @@ ActiveRecord::Schema.define(version: 20180329184813) do
 
   create_table "users", force: :cascade do |t|
     t.string "uid"
-    t.string "first_name"
-    t.string "last_name"
+    t.string "first_name", null: false
+    t.string "last_name", null: false
     t.string "email"
     t.string "login"
     t.string "password_digest"

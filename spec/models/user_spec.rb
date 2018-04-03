@@ -57,6 +57,17 @@ describe User do
       it { should validate_length_of(:email).is_at_least(6).is_at_most(30) }
     end
 
+    context "avatar validations" do
+      before do
+        @user = build(:basic_user, avatar: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'support', 'large_avatar.jpg'), 'image/png'))
+        @user2 = build(:basic_user, avatar: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'support', 'avatar.mp3'), 'image/png'))
+      end
+      subject { @user }
+      it { should_not be_valid }
+      subject { @user2 }
+      it { should_not be_valid }
+    end
+
   end
 
   describe "db columns" do
@@ -103,22 +114,26 @@ describe User do
       expect(user.remember_digest).to be_nil
     end
     context "password reseting" do
-      user = create(:basic_user)
-      user.reset_password
+
       it "sends email after reseting user" do
+        user = create(:basic_user)
+        user.reset_password
         validate_basic_email_sending(user: user)
       end
       it "creates diggest correctly" do
+        user = create(:basic_user)
+        user.reset_password
         expect(user.reset_digest).not_to be_nil
         expect(user.reset_sent_date).not_to be_nil
       end
     end
     context "user activation" do
-      user = create(:basic_user)
       it "sends email after user is created" do
+        user = create(:basic_user)
         validate_basic_email_sending(user: user)
       end
       it "creates digest correctly" do
+        user = create(:basic_user)
         user.activate
         expect(user.is_active).to be_true
       end

@@ -18,6 +18,7 @@ module CustomHelper
     user = options[:user] || create(:basic_user)
     target_email = options[:to] || user.email
     open_last_email.should be_delivered_to target_email
+    open_last_email.should have_subject options[:subject] if options[:subject]
   end
 
 end

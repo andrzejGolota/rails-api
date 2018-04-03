@@ -9,6 +9,7 @@ require 'shoulda'
 require 'factory_bot'
 require 'support/custom_helper.rb'
 require 'database_cleaner'
+require 'aasm/rspec'
 #require 'shoulda/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -59,7 +60,7 @@ RSpec.configure do |config|
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   config.use_transactional_fixtures = false
-  
+
   config.around(:each) do |example|
     DatabaseCleaner.cleaning do
       example.run
