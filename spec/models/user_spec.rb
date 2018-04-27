@@ -7,10 +7,20 @@ describe User do
     it { is_expected.to validate_presence_of :email }
     it { is_expected.to validate_presence_of :login }
     it { is_expected.to validate_presence_of :password_digest }
-    it { is_expected.to validate_presence_of :is_active }
+    it { is_expected.to validate_inclusion_of(:is_active).in_array([true, false]) }
     it { is_expected.to validate_presence_of :activation_sent_date }
     it { is_expected.to validate_presence_of :contact_visibility }
     it { is_expected.to validate_presence_of :role_id }
+    context "exclusion of reserved names" do
+      it "blocks root login" do
+        user = build(:basic_user, login: 'root')
+        expect(user).not_to be_valid
+      end
+      it "blocks admin login" do
+        user = build(:basic_user, login: 'admin')
+        expect(user).not_to be_valid
+      end
+    end
     context "unique email and login" do
       before do
         @user = create(:basic_user)
@@ -103,7 +113,7 @@ describe User do
       user = create(:basic_user)
       order = create(:order, user_id: user.id)
       product = create(:product)
-      create(:order_products, order_id: order.id, product_id: product.id)
+      create(:order_product, order_id: order.id, product_id: product.id)
       expect(user.products.length).to eq(1)
     end
     it "remembers and forgets" do
@@ -135,7 +145,7 @@ describe User do
       it "creates digest correctly" do
         user = create(:basic_user)
         user.activate
-        expect(user.is_active).to be_true
+        expect(user.is_active).to be_truthy
       end
     end
 
@@ -145,9 +155,9 @@ describe User do
     it { is_expected.to belong_to :role }
     it { is_expected.to have_many :invoices }
     it { is_expected.to have_many :orders }
-    it { is_expected.to have_many :payments, through: :orders}
+    it { is_expected.to have_many(:payments).through(:orders) }
     it { is_expected.to have_many :companies }
-    it { is_expected.to have_many :costs, through: :invoices }
+    it { is_expected.to have_many(:costs).through(:invoices) }
     it { is_expected.to have_many :sent_messages }
     it { is_expected.to have_many :received_messages }
     it { is_expected.to have_many :contacts }

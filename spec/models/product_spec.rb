@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Product, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of :name }
-    it { is_expected.to validate_presence_of :active }
+    it { is_expected.to validate_inclusion_of(:active).in_array([true, false]) }
     it { is_expected.to validate_presence_of :price }
   end
 

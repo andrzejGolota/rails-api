@@ -20,7 +20,7 @@ RSpec.describe Order, type: :model do
       }
     end
 
-    context "can be finalized only with valid payment" do
+    context "can't be finalized without valid payment" do
       before do
         @order = create(:order_with_payment)
       end

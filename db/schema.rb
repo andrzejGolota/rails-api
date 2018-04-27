@@ -112,6 +112,7 @@ ActiveRecord::Schema.define(version: 20180329184813) do
     t.integer "company_id"
     t.string "state", null: false
     t.string "comment"
+    t.datetime "settled_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_invoices_on_client_id"
@@ -124,6 +125,8 @@ ActiveRecord::Schema.define(version: 20180329184813) do
     t.integer "recipent_id"
     t.string "content"
     t.string "state", null: false
+    t.string "attachment"
+    t.datetime "received_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipent_id"], name: "index_messages_on_recipent_id"
@@ -152,9 +155,11 @@ ActiveRecord::Schema.define(version: 20180329184813) do
     t.integer "order_id"
     t.string "state", null: false
     t.decimal "amount", null: false
+    t.string "paypal_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_payments_on_order_id"
+    t.index ["paypal_id"], name: "index_payments_on_paypal_id"
     t.index ["user_id"], name: "index_payments_on_user_id"
   end
 

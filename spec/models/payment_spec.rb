@@ -6,12 +6,23 @@ describe Payment do
     it { is_expected.to validate_presence_of :user_id }
     it { is_expected.to validate_presence_of :order_id }
     it { is_expected.to validate_presence_of :amount }
+
+    context "cannot add new payment to order as there is completed one" do
+      before do
+        create(:completed_payment)
+        @payment = build(:payment)
+      end
+      subject { @payment }
+      it {
+        should_not be_valid
+      }
+    end
   end
 
   describe "methods" do
     it "new payment cancels all pending" do
       3.times do
-        create(:payment, order: :order)
+        create(:payment, order: create(:order))
       end
       expect(Payment.where(state: 'pending').length).to eq(1)
     end
@@ -24,6 +35,16 @@ describe Payment do
         @payment = create(:payment)
       end
       subject { @payment }
+      it {
+        should transition_from(:pending).to(:failed).on_event(:reject)
+        should_not transition_from(:pending).to(:completed).on_event(:confirm)
+      }
+    end
+
+    context "completed payment should have paypal_id" do
+      before do
+        @payment = create(:payment, paypal_id: 1)
+      end
       it {
         should transition_from(:pending).to(:completed).on_event(:confirm)
       }
@@ -45,6 +66,7 @@ describe Payment do
     it "emails after payment failure" do
       user = create(:basic_user)
       payment = create(:payment, user: user)
+      payment.reject!
       validate_basic_email_sending(user: user, subject: "Your Payment #{payment.id} was rejected.")
     end
 

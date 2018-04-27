@@ -4,7 +4,7 @@ describe Country do
   describe "validations" do
     it { is_expected.to validate_presence_of :country_name }
     it { is_expected.to validate_presence_of :iso_code }
-    it { is_expected.to validate_presence_of :active }
+    it { is_expected.to validate_inclusion_of(:active).in_array([true, false]) }
 
     context "unique country codes" do
       before do

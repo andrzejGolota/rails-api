@@ -9,17 +9,17 @@ describe Contact do
 
     context "accepted is required only if we merge contact with user" do
       before do
-        @contact = Factory.new(:contact)
+        @contact = create(:contact)
       end
       subject { @contact }
       it {
-        should validate_presence_of :accepted
+        should validate_inclusion_of(:accepted).in_array([true, false])
       }
     end
 
     context "only premium users can create contacts" do
       before do
-        @contact = Factory.new(:contact, user: create(:basic_user))
+        @contact = create(:contact, user: create(:basic_user))
       end
       subject { @contact }
       it { should_not be_valid }
@@ -42,7 +42,7 @@ describe Contact do
     it "assigns automatically first name and last name" do
       user = create(:basic_user)
       creator = create(:premium_user)
-      contact = create(:contact, user: creator, contact_user: user)
+      contact = create(:contact, user: creator, contact_user_id: user.id)
       contact.accepted = true
       contact.save
       expect(contact.first_name).to eq(user.first_name)
@@ -52,11 +52,11 @@ describe Contact do
     it "shows contact for user only if it is accepted" do
       user = create(:basic_user)
       creator = create(:premium_user)
-      contact = create(:contact, user: creator, contact_user: user)
-      expect(creator.contacts.length).to eq(0)
+      contact = create(:contact, user: creator, contact_user_id: user.id)
+      expect(creator.accepted_contacts.length).to eq(0)
       contact.accepted = true
       contact.save
-      expect(creator.contacts.length).to eq(1)
+      expect(creator.accepted_contacts.contacts.length).to eq(1)
     end
 
     it "has default contact address method" do
@@ -68,7 +68,7 @@ describe Contact do
     it "shows unaccepted contacts" do
       user = create(:basic_user)
       creator = create(:premium_user)
-      create(:contact, user: creator, contact_user: user)
+      create(:contact, user: creator, contact_user_id: user.id)
       expect(creator.awaiting_contacts.length).to eq(1)
     end
 

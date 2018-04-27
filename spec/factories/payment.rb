@@ -4,6 +4,11 @@ FactoryBot.define do
     order
     state 'pending'
     amount { Faker::Commerce.price }
-    paypal_id nil
+
+    factory :completed_payment do
+      paypal_id { Faker::Number.between(1, 100) }
+      state 'completed'
+    end
+
   end
 end

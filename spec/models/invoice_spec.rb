@@ -19,6 +19,21 @@ describe Invoice do
         is_expected.to validate_presence_of :settled_at
       }
     end
+
+    context "settled_at cannot be future date and before creation date" do
+      before do
+        @future_invoice = create(:settled_invoice, settled_at: Time.now + 2 )
+        @too_old_invoice = create(:settled_invoice, created_at: Time.now, settled_at: Time.now - 2)
+      end
+      subject { @future_invoice }
+      it {
+        should_not be_valid
+      }
+      subject { @too_old_invoice }
+      it {
+        should_not be_valid
+      }
+    end
   end
 
   describe "db columns" do
@@ -36,12 +51,14 @@ describe Invoice do
 
     it "returns total invoice price" do
       invoice = create(:invoice_with_costs)
+      cost_sum = 0
       invoice.costs.each{ |cost| cost_sum = cost_sum + cost.quantity*cost.unit_price }
       expect(invoice.total_value).to eq(cost_sum)
     end
 
     it "returns total invoice price with taxes" do
       invoice = create(:invoice_with_costs)
+      cost_sum = 0
       invoice.costs.each{ |cost| cost_sum = cost_sum + cost.quantity*(cost.unit_price*cost.tax+cost.unit_price) }
       expect(invoice.total_taxed_value).to eq(cost_sum)
     end

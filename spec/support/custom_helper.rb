@@ -11,7 +11,7 @@ module CustomHelper
 
   def validate_role_method(role)
     user = create(role.parameterize.to_sym)
-    expect(user.send("#{role}?")).to be_true
+    expect(user.send("#{role}?")).to be_truthy
   end
 
   def validate_basic_email_sending(options = {})

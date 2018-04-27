@@ -47,6 +47,10 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with :truncation
   end
 
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
+
   config.include CustomHelper
   config.include FactoryBot::Syntax::Methods
   config.include Shoulda::Matchers::ActiveModel, type: :model

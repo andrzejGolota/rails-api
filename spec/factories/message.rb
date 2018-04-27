@@ -10,6 +10,7 @@ FactoryBot.define do
 
     factory :received_message do
       state 'received'
+      received_at DateTime.now
     end
 
   end

@@ -6,6 +6,7 @@ class CreateMessages < ActiveRecord::Migration[5.1]
       t.string :content, length: 4000
       t.string :state, null: false
       t.string :attachment
+      t.datetime :received_at
       t.timestamps
     end
   end

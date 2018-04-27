@@ -33,7 +33,13 @@ describe Message do
       subject { @user.messages.where(state: 'sent').length }
       it { should be_eq(0) }
     end
-
+    context "needs received_at if read" do
+      before do
+        @message = build(:received_message, received_at: nil)
+      end
+      subject { @message }
+      it { should_not be_valid }
+    end
   end
 
   describe "db columns" do
@@ -62,7 +68,6 @@ describe Message do
         expect(subject.length).to eq(20)
         expect(subject).to match_array(conversation_messages)
       end
-
     end
   end
 
