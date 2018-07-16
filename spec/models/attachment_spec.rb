@@ -7,8 +7,8 @@ describe Attachment do
     it { is_expected.to validate_presence_of :user_id }
     context "file validations" do
       before do
-        @attachment = build(:too_big_attachment)
-        @attachment2 = build(:bad_extension_attachment)
+        @attachment = create(:too_big_attachment)
+        @attachment2 = create(:bad_extension_attachment)
       end
       subject { @attachment }
       it { should_not be_valid }

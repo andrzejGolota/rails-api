@@ -59,7 +59,7 @@ ActiveRecord::Schema.define(version: 20180329184813) do
     t.string "first_name"
     t.string "last_name"
     t.integer "company_id"
-    t.boolean "accepted"
+    t.boolean "accepted", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_contacts_on_company_id"
@@ -84,9 +84,9 @@ ActiveRecord::Schema.define(version: 20180329184813) do
 
   create_table "countries", force: :cascade do |t|
     t.string "country_name", null: false
-    t.string "iso_code", null: false
+    t.string "country_code", null: false
     t.boolean "active", default: true, null: false
-    t.index ["iso_code"], name: "index_countries_on_iso_code"
+    t.index ["country_code"], name: "index_countries_on_country_code"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

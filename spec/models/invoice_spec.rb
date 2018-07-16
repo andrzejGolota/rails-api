@@ -12,7 +12,7 @@ describe Invoice do
 
     context "settled_at is required for final state" do
       before do
-        @invoice = create(:settled_invoice)
+        @invoice = build(:settled_invoice)
       end
       subject { @invoice }
       it {
@@ -22,8 +22,8 @@ describe Invoice do
 
     context "settled_at cannot be future date and before creation date" do
       before do
-        @future_invoice = create(:settled_invoice, settled_at: Time.now + 2 )
-        @too_old_invoice = create(:settled_invoice, created_at: Time.now, settled_at: Time.now - 2)
+        @future_invoice = build(:settled_invoice, settled_at: Time.now + 2 )
+        @too_old_invoice = build(:settled_invoice, created_at: Time.now, settled_at: Time.now - 2)
       end
       subject { @future_invoice }
       it {
@@ -67,17 +67,18 @@ describe Invoice do
 
   describe "aasm" do
 
-    it "should have correct initial state" do
+    it "transition and initial state test" do
       invoice = create(:created_invoice)
-      expect(invoice).to transition_from(:created).to(:pending).on_event(:fill)
-      expect(invoice).to have_state :created
-      expect(invoice).to transition_from(:created).to(:draft).on_event(:fill_draft)
-      expect(invoice).to_not allow_transition_to :settled
+      expect(invoice).to transition_from(:created).to(:pending).on_event(:fill).on(:state)
+      invoice = create(:created_invoice)
+      expect(invoice).to have_state(:created).on(:state)
+      expect(invoice).to transition_from(:created).to(:draft).on_event(:fill_draft).on(:state)
+      expect(invoice).to_not allow_transition_to(:settled).on(:state)
     end
 
     it "sets the date after settled" do
       invoice = create(:pending_invoice)
-      invocie.settle!
+      invoice.settle
       expect(invoice.settled_at).not_to be_nil
     end
 

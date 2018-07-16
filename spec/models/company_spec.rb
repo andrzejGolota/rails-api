@@ -16,7 +16,6 @@ describe Company do
       end
       subject { @company }
       it {
-        should validate_uniqueness_of(:name)
         should validate_uniqueness_of(:company_number)
         should validate_uniqueness_of(:vat_number)
       }

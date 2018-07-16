@@ -7,10 +7,10 @@ describe Payment do
     it { is_expected.to validate_presence_of :order_id }
     it { is_expected.to validate_presence_of :amount }
 
-    context "cannot add new payment to order as there is completed one" do
+    context "new payment after finalizing one" do
       before do
-        create(:completed_payment)
-        @payment = build(:payment)
+        @completed_payment = create(:completed_payment)
+        @payment = build(:payment, order_id: @completed_payment.order_id)
       end
       subject { @payment }
       it {
@@ -21,8 +21,9 @@ describe Payment do
 
   describe "methods" do
     it "new payment cancels all pending" do
+      order = create(:order)
       3.times do
-        create(:payment, order: create(:order))
+        create(:payment, order: order)
       end
       expect(Payment.where(state: 'pending').length).to eq(1)
     end
@@ -30,23 +31,34 @@ describe Payment do
 
   describe "aasm" do
 
-    context "correct initial state" do
+    describe "correct initial state" do
       before do
         @payment = create(:payment)
       end
       subject { @payment }
       it {
-        should transition_from(:pending).to(:failed).on_event(:reject)
-        should_not transition_from(:pending).to(:completed).on_event(:confirm)
+        should transition_from(:pending).to(:failed).on_event(:reject).on(:state)
       }
     end
 
-    context "completed payment should have paypal_id" do
+    describe "correct initial state" do
+      before do
+        @payment = create(:payment)
+      end
+      subject { @payment }
+      it {
+        should_not allow_event(:confirm).on(:state)
+        should_not allow_transition_to(:completed).on(:state)
+      }  
+    end
+
+    context "completed payment state" do
       before do
         @payment = create(:payment, paypal_id: 1)
       end
+      subject { @payment }
       it {
-        should transition_from(:pending).to(:completed).on_event(:confirm)
+        should transition_from(:pending).to(:completed).on_event(:confirm).on(:state)
       }
     end
 
@@ -58,7 +70,7 @@ describe Payment do
 
     it "emails after successful payment" do
       user = create(:basic_user)
-      payment = create(:payment, user: user)
+      payment = create(:payment, user: user, paypal_id: 1)
       payment.confirm!
       validate_basic_email_sending(user: user, subject: "Your Payment #{payment.id} is confirmed!")
     end

@@ -8,7 +8,7 @@ FactoryBot.define do
     end
 
     factory :too_big_attachment do
-      file { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'support', 'large_avatar.png'), 'image/png') }
+      file { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'support', 'large_avatar.jpg'), 'image/png') }
     end
 
     factory :bad_extension_attachment do

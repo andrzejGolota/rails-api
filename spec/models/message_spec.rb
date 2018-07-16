@@ -21,17 +21,21 @@ describe Message do
   context "aasm" do
     it "has sent status by default" do
       message = create(:message)
-      expect(message).to have_state :sent
-      expect(message).to transition_from(:sent).to(:received).on_event(:read)
+      expect(message).to have_state(:sent).on(:state)
+      expect(message).to transition_from(:sent).to(:received).on_event(:read).on(:state)
     end
     context "reading the newest message sets other to received too" do
       before do
-        @user = create(premium_user)
-        create_list(:sent_message, 5, user: @user)
-        create(:received_message, user: @user)
+        @user = create(:premium_user)
+        @recipent = create(:premium_user)
+        create_list(:sent_message, 5, user: @user, recipent: @recipent)
+        message = create(:sent_message, user: @user, recipent: @recipent)
+        message.received_at = Time.now
+        message.state = 'received'
+        message.save
       end
-      subject { @user.messages.where(state: 'sent').length }
-      it { should be_eq(0) }
+      subject { @user.sent_messages.where(messages: { state: 'sent', recipent: @recipent.id } ).length }
+      it { should eq(0) }
     end
     context "needs received_at if read" do
       before do
@@ -61,9 +65,9 @@ describe Message do
         @user = create(:premium_user)
         @recipent = create(:premium_user)
         create_list(:message, 10, user: @user, recipent: @recipent)
-        create_list(:message, 10, user: @recpient, recipent: @user)
+        create_list(:message, 10, user: @recipent, recipent: @user)
       end
-      subject { @user.conversation_with(recipent) }
+      subject { @user.conversation_with(@recipent.id) }
       it "compare method" do
         expect(subject.length).to eq(20)
         expect(subject).to match_array(conversation_messages)

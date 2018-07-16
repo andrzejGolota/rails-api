@@ -10,19 +10,21 @@ class Payment < ApplicationRecord
   validates_presence_of :amount
   validate :completed_payment_blockade
 
-  after_commit :create_payment_email, on: :create
-  after_commit :cancel_pending_payments, on: :create
+  after_create :create_payment_email
+  after_create :cancel_pending_payments
+  after_commit :rejected_payment_email, if: proc { |p| p.failed? }
+  after_commit :completed_payment_email, if: proc { |p| p.completed? }
 
   aasm(:state) do
     state :pending, initial: true
     state :completed, :failed
 
-    event :reject do
-      transitions from: :pending, to: :completed#, after: Proc.new { |order| }
+    event :confirm do
+      transitions from: :pending, to: :completed, guard: :has_paypal_id?
     end
 
-    event :confirm do
-      transitions from: :pending, to: :failed#, after: Proc.new { |order| }
+    event :reject do
+      transitions from: :pending, to: :failed
     end
   end
 
@@ -30,18 +32,27 @@ class Payment < ApplicationRecord
 
   end
 
+  def rejected_payment_email
+
+  end
+
+  def completed_payment_email
+
+  end
+
   protected
 
+  def has_paypal_id?
+    self.paypal_id.present?
+  end
+
   def cancel_pending_payments
-    if self.order_id # it is quite useless as we call method after successful commit
-      payments = self.order.pending_payments.where.not(id: self.id)
-      payments.each{ |payment| payment.update_attribute(:state, 'failed') }
-    end
+    order.pending_payments.each{ |payment| payment.id != id && payment.reject! } if order_id
   end
 
   def completed_payment_blockade
-    if self.order_id
-      errors[:order] << 'already has completed payment' if self.order.has_finalized_payment?
+    if order_id
+      errors[:order] << 'already has completed payment' if order.has_finalized_payment?
     end
   end
 

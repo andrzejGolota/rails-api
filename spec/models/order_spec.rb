@@ -15,8 +15,8 @@ RSpec.describe Order, type: :model do
       end
       subject { @order }
       it {
-        should have_state :new
-        should transition_from(:new).to(:failed).on_event(:failure)
+        should have_state(:new).on(:state)
+        should transition_from(:new).to(:failed).on_event(:failure).on(:state)
       }
     end
 
@@ -26,8 +26,8 @@ RSpec.describe Order, type: :model do
       end
       subject { @order }
       it {
-        should_not allow_event :finalize
-        should_not allow_transition_to :completed
+        should_not allow_event(:finalize).on(:state)
+        should_not allow_transition_to(:completed).on(:state)
       }
     end
 
@@ -37,7 +37,7 @@ RSpec.describe Order, type: :model do
       end
       subject { @order }
       it {
-        should transition_from(:new).to(:completed).on_event(:finalize)
+        should transition_from(:new).to(:completed).on_event(:finalize).on(:state)
       }
     end
 

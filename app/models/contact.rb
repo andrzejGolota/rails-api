@@ -6,12 +6,9 @@ class Contact < ApplicationRecord
 
   validates_presence_of :first_name
   validates_presence_of :last_name
-  validates :accepted, inclusion: { in: [true, false] }, if: Proc.new { |contact| contact.contact_user_id.present? }
+  validates :accepted, inclusion: { in: [true, false] }, if: proc { |contact| contact.contact_user_id.present? }
   validates_presence_of :user_id
-  before_validation :get_user_data
-
-  scope :accepted_contacts, -> { where(accepted: true) }
-  scope :awaiting_contacts, -> { where(accepted: false) }
+  before_validation :get_user_data, :check_user_type
 
   def default_address
     contact_addresses.where(default: true).first
@@ -29,7 +26,7 @@ class Contact < ApplicationRecord
 
   def check_user_type
     if self.user_id
-      errors[:user_id] << " with premium status are allowed to create contacts" if !user.premium_priveleges?
+      errors[:user_id] << "with premium status are allowed to create contacts" if !user.premium_priveleges?
     end
   end
 

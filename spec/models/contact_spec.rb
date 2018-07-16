@@ -17,12 +17,8 @@ describe Contact do
       }
     end
 
-    context "only premium users can create contacts" do
-      before do
-        @contact = create(:contact, user: create(:basic_user))
-      end
-      subject { @contact }
-      it { should_not be_valid }
+    it "only premium users can create contacts" do
+      expect{ create(:contact, user: create(:basic_user)) }.to raise_error(/User with premium status are allowed to create contacts/)
     end
 
   end
@@ -55,8 +51,8 @@ describe Contact do
       contact = create(:contact, user: creator, contact_user_id: user.id)
       expect(creator.accepted_contacts.length).to eq(0)
       contact.accepted = true
-      contact.save
-      expect(creator.accepted_contacts.contacts.length).to eq(1)
+      contact.save!
+      expect(creator.accepted_contacts.length).to eq(1)
     end
 
     it "has default contact address method" do
@@ -76,11 +72,11 @@ describe Contact do
 
   describe "assiociations" do
     it { is_expected.to belong_to :user }
-    it { is_expected.to have_many :contact_address }
+    it { is_expected.to have_many :contact_addresses }
   end
 
   describe "nested attributes" do
-    it { should accept_nested_attributes_for :contact_address }
+    it { should accept_nested_attributes_for :contact_addresses }
   end
 
 end

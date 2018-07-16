@@ -20,7 +20,7 @@ class User < ApplicationRecord
   validates_presence_of :last_name
   validates :email, presence: true,
             format: { with: EMAIL_REGEX, message: "incorrect format" },
-            uniqueness: { case_sensitive: false }, length: { maximum: 30 }
+            uniqueness: { case_sensitive: false }, length: { minimum: 6, maximum: 30 }
   validates :login,
             presence: true,
             format: { with: LOGIN_REGEX, message: "incorrect format" },
@@ -37,6 +37,7 @@ class User < ApplicationRecord
 
   before_save :downcase_attributes
   before_create :create_activation_digest
+  after_create :send_activation_email 
 
   def basic_user?
     role.name == "Invoice-App-FreeUser"
@@ -63,13 +64,13 @@ class User < ApplicationRecord
   end
 
   def remember
-    self.remember_token = User.new_token
+    remember_token = User.new_token
     update_attribute(:remember_digest, User.digest(remember_token))
   end
 
   def authenticated?(attribute, token)
-    digest = self.send("#{attribute}_digest")
-    digest.nil? ? false : BCrypt::Password.new(remember_digest).is_password?(remember_token)
+    digest = send("#{attribute}_digest")
+    digest.nil? ? false : BCrypt::Password.new(digest).is_password?(token)
   end
 
   def forget
@@ -106,6 +107,20 @@ class User < ApplicationRecord
   def create_reset_digest
     self.reset_token = User.new_token
     update_columns(reset_digest: User.digest(reset_token), reset_sent_date: Time.zone.now)
+  end
+
+  def accepted_contacts
+    contacts.where(contacts: { accepted: true } ) unless contacts.empty?
+  end
+
+  def awaiting_contacts
+    contacts.where(contacts: { accepted: false } ) unless contacts.empty?
+  end
+
+  def conversation_with recipent_id
+    sent_messages.where(messages: { recipent_id: recipent_id })
+                 .or(received_messages.where(messages: { user_id: recipent_id }))
+                 .order(created_at: :asc)
   end
 
   private

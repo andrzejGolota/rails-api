@@ -7,7 +7,7 @@ FactoryBot.define do
     postcode { Faker::Address.zip_code }
     city { Faker::Address.city }
     region { Faker::Address.state }
-    country_code { Faker::Address.country_code_long }
     association :user, factory: :basic_user
+    association :country
   end
 end

@@ -4,7 +4,7 @@ FactoryBot.define do
     association :client, factory: :company
     invoice_number { Faker::Number.number(10) }
     subject { Faker::Lorem.word }
-    association :company, factory: :company
+    association :company
     comment { Faker::Lorem.sentence }
 
     trait :draft do

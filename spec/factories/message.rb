@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :message do
-    basic_user
+    association :user, factory: :basic_user
     association :recipent, factory: :basic_user
     content { Faker::Lorem.sentence }
 
@@ -10,7 +10,8 @@ FactoryBot.define do
 
     factory :received_message do
       state 'received'
-      received_at DateTime.now
+      created_at Time.now
+      received_at Time.now      
     end
 
   end

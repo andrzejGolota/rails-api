@@ -6,7 +6,7 @@ class CreateContacts < ActiveRecord::Migration[5.1]
       t.string :first_name
       t.string :last_name
       t.references :company, index: true
-      t.boolean :accepted
+      t.boolean :accepted, default: false
       t.timestamps
     end
   end
